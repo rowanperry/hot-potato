@@ -1,3 +1,5 @@
+//		Rowan Perry		//
+//	 No.  21274961		//
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -16,7 +18,7 @@ void title(string text) {
 	cout << "             " << text << endl;
 	cout << "----------------------------------------------------------------" << endl;
 }
-//formating function displays text in a Menu like style easily
+//formating function; displays text in a Menu like style easily
 
 void display(double Icredits, double ItotalCredits, bool clear) {
 	cout << endl << "Your Credits balance is: " << Icredits;
@@ -26,14 +28,14 @@ void display(double Icredits, double ItotalCredits, bool clear) {
 		system("cls");
 	}
 }
-//formatting function displays the current order status, is clear is passed as true it will clear the screen as well 
+//formatting function; displays the current order status, is clear is passed as true it will clear the screen as well 
 
 string ToLower(string myString) {
 	string lowerString;
 	for (auto c : myString) lowerString += tolower(c);
 	return lowerString;
 }
-//converts inputs to lower case
+//converts inputs to lower case - provided (by ollie)
 
 int isInputInList(bool arrayCheck[], const string array[],  const double arrayPrice[], int MAX) {
 	int temp = 0;
@@ -43,7 +45,7 @@ int isInputInList(bool arrayCheck[], const string array[],  const double arrayPr
 	for (int i=0;i<MAX;i++) {
 		if (inputString == array[i]) {
 			temp = i;
-			break;
+			break; //skips to the if statment below
 		}
 	}
 	if (temp >= 0 && temp < MAX) {
@@ -55,6 +57,26 @@ int isInputInList(bool arrayCheck[], const string array[],  const double arrayPr
 }
 //takes user input and checks the input with all the array contents in the passed array
 //returns the place in the array, or -1 for not found
+
+void addCredits(double& number) {
+	double input = 0.0;
+	title("Enter Credits: ");
+	cin >> input;
+	while (cin.fail() || input < 0) {
+		cin.clear();
+		cin.ignore(80, '\n');
+
+		cout << "Please Enter a valid credits number: " << endl;
+		cin >> input;
+	}
+	number = number + input;
+	cout << fixed << setprecision(2);
+	cout << "You entered in an additional " << input << " credits" << endl;
+	cout << "You now have " << number << " credits" << endl;
+	cout << endl << "Your Credits balance: " << number << endl << endl;
+	//Credit entry and validation, accepts doubles but not non numbers
+	//set precision makes the decimals truncate to two points so the credits can act as currency
+}
  
 bool yesOrNoFUNC() {
 	bool funcValidated = false;
@@ -73,7 +95,7 @@ bool yesOrNoFUNC() {
 		}
 	} while (!funcValidated);
 }
-//used to stop the repeat of y/n questions code 
+//used to stop the repeat of y/n questions in code, returns true or false respective of result
 
 void listOutput(bool arrayCheck[], const string array[], const double arrayPrice[], int MAX) {
 	for (int i = 0;i < MAX;i++) {
@@ -86,144 +108,184 @@ void listOutput(bool arrayCheck[], const string array[], const double arrayPrice
 //outputs the list of items; arraycheck checks if that item has been orderd doesnt display it if it has, 
 //array displays the name of the item, arrayPrice displays the price, and MAX is used to represent the size of the array how many loops are needed
 
-//--------------------------------//                      
-        //MAIN CODE BLOCK//
-//--------------------------------//
-int main() {
-	double credits;
-	double totalCredits = 0.0;
-	string size;
-	bool validated = false;
+void menu(double& number, bool& loop, bool& loopMenu) {
+	int choice = 0;
+	title("Hot Potato \n             Please Choose an Option... ");
+	cout << endl;
+	title("\n             (1)Enter Credits\n             (2)Make Order\n             (3)Exit\n");
+	//start menu
+	cin >> choice;
+	while (cin.fail() || choice <= 0 || choice >= 4) {
+		cin.clear();
+		cin.ignore(80, '\n');
 
-	bool toppingsHasOrdered[LENOFTOPPINGS] = { false,false,false,false,false,false,false,false };
-	bool extraHasOrdered[LENOFEXTRAS] = { false,false,false,false,false,false };
-	//toppings arrays
+		cout << "Please Enter a valid choice number: " << endl;
+		cin >> choice;
+	}
+	//validate user input of the menu choice
 
-	while (!validated) {
-		title("Hot Potato \n             Enter Credits: ");
-		cin >> credits;
-		while (cin.fail() || credits < 0) {
-			cin.clear();
-			cin.ignore(80, '\n');
-
-			cout << "Please Enter a valid credits number: "<< endl;
-			cin >> credits;
-		}
-		cout << fixed << setprecision(2);
-		cout << endl << "Your Credits balance: " << credits << endl << endl;
-		validated = true;
-		//Credit entry and validation, accepts doubles but not non numbers
-		//set precision makes the decimals truncate to two points so the credits can act as currency
+	if (choice == 1) {
+		addCredits(number);
+		//runs the credit function, with credits passed through
+	}
+	else if (choice == 2) {
+		loopMenu = true;
+	}
+	else if (choice == 3) {
+		loop = false;
+		loopMenu = true;
 	}
 	system("pause");
 	system("cls");
 	//used to clear screen
+}
 
-	title("Size Selection");
-	validated = false;
-	do {
-		title("What Size would you like...\n             small (5.00) / medium (8.50) / large (10.25)... ?");
-		cin >> size;
-		size = ToLower(size);
-		if (size == "small") {
-			totalCredits = totalCredits + 5.0;
-			validated = true;
-		}
-		if (size == "medium") {
-			totalCredits = totalCredits + 8.5;
-			validated = true;
-		}
-		if (size == "large") {
-			totalCredits = totalCredits + 10.25;
-			validated = true;
-		}
-		else {
-			size = "";
-		}
-	} while (!validated);
-	//takes and converts input into lower case, then compares it the the sizes and adds the prices of which to your TotalCredits
-	cout << "You chose " << size << ", that comes to " << totalCredits << endl;
-	display(credits, totalCredits, true);
-	//clears page and displays order status, used often ^^^
-
-	title("Topping's Selection");
-	display(credits, totalCredits, false);
-
-	validated = false;
-	do {
-		title("Which topping would you like?...");
-		listOutput(toppingsHasOrdered, toppingsNames, toppings, LENOFTOPPINGS);
-		//outputs all the toppings
-
-		int toppingNum = isInputInList(toppingsHasOrdered, toppingsNames, toppings, LENOFTOPPINGS);
-		totalCredits = totalCredits + toppings[toppingNum];
-		//checks if string entered is in the toppings array, if it is then it returns the place in the array that it is so the price can be added
-		//adds the price of the selected topping onto the totalcredits and marks the topping as true so it isnt displayed again
-		
-		display(credits, totalCredits, false);
-		cout << "Would you like to add another topping ? ";
-		validated = yesOrNoFUNC();
-		//function returns wether or not to repeat the toppings loop again
-	} while (!validated);
-	display(credits, totalCredits, true);
-
-	title("Extra's Selection");
-	cout << "Do you want to add an extra? ";
-	validated = yesOrNoFUNC();
-	//returns wether next block is ran as the extras are optional
-	
-	while (!validated) {
-		title("Which Extra would you like?");
-		listOutput(extraHasOrdered, extrasNames, extras, LENOFEXTRAS);
-		//outputs all the extras
-		int extrasNum = isInputInList(extraHasOrdered, extrasNames, extras, LENOFEXTRAS);
-		totalCredits = totalCredits + toppings[extrasNum];
-		validated = true;
+void resetArray(bool array[], int MAX) {
+	for (int i = 0;i < MAX;i++) {
+		array[i] = false;
 	}
-	display(credits, totalCredits, true);
-	validated = false;
-	//extra's selecting code
+}
+//sets all values of a passed array to false, used to reset between orders
 
-	title("Payment Screen");
-	display(credits, totalCredits, false);
-	bool paymentSuccess = false;
-	// ^^ used for adding credits loop
+//--------------------------------//                      
+        //MAIN CODE BLOCK//
+//--------------------------------//
+int main() {
+	double credits = 0.0;
+	double totalCredits = 0.0;
+	cout << fixed << setprecision(2); //makes the two above doubles act like currency, without this they will display as whole numbers if credits arnt entered fist
+	string size;
+	bool validated = false;
+	bool continueLoop = true;
+
+	bool toppingsHasOrdered[LENOFTOPPINGS] = { false,false,false,false,false,false,false,false };
+	bool extraHasOrdered[LENOFEXTRAS] = { false,false,false,false,false,false };
 	
 	do {
-		if (totalCredits > credits) {
-			cout << endl << "ERROR, Not Enough Funds!" << endl;
-			cout << "Would you like to enter more credits? ";
-			validated = yesOrNoFUNC();
-			//lets user add more credits if they do not have enough
-			while (!validated) {
-				double MoreCredits;
-				title("Enter Credits: ");
-				cin >> MoreCredits;
-				while (cin.fail() || credits < 0) {
-					cin.clear();
-					cin.ignore(80, '\n');
+		menu(credits, continueLoop, validated);
+		//main menu screen, passed the credits to be changed if chosen
+	} while (!validated);
+	//this keeps the while loop on so that if a user chooses to add credits they can go back choose another option
 
-					cout << "Please Enter a valid credits number: " << endl;
-					cin >> MoreCredits;
-				}
-				cout << "You entered in an additional  " << MoreCredits << " credits" << endl;
-				credits = credits + MoreCredits;
-				cout << "You now have " << credits << " credits" << endl;
-				display(credits, MoreCredits, false);
+	while (continueLoop) {
+		title("Size Selection");
+		validated = false;
+		do {
+			title("What Size would you like...\n             small (5.00) / medium (8.50) / large (10.25)... ?");
+			cin >> size;
+			size = ToLower(size);
+			if (size == "small") {
+				totalCredits = totalCredits + 5.0;
 				validated = true;
 			}
+			else if (size == "medium") {
+				totalCredits = totalCredits + 8.5;
+				validated = true;
+			}
+			else if (size == "large") {
+				totalCredits = totalCredits + 10.25;
+				validated = true;
+			}
+			else {
+				size = "";
+			}
+		} while (!validated);
+		//takes and converts input into lower case, then compares it the the sizes and adds the prices of which to TotalCredits
+		cout << "You chose " << size << ", that comes to " << totalCredits << endl;
+		display(credits, totalCredits, true);
+		//clears page and displays order status, used often ^^^
+
+		title("Topping's Selection");
+		display(credits, totalCredits, false);
+
+		validated = false;
+		do {
+			title("Which topping would you like?...");
+			listOutput(toppingsHasOrdered, toppingsNames, toppings, LENOFTOPPINGS);
+			//outputs all the toppings
+
+			int toppingNum = isInputInList(toppingsHasOrdered, toppingsNames, toppings, LENOFTOPPINGS);
+			totalCredits = totalCredits + toppings[toppingNum];
+			//checks if string entered is in the toppings array, if it is then it returns the place in the array that it is so the price can be added
+			//adds the price of the selected topping onto the totalcredits and marks the topping as true so it isnt displayed again
+
+			display(credits, totalCredits, false);
+			cout << "Would you like to add another topping ? ";
+			validated = yesOrNoFUNC();
+			//function returns wether or not to repeat the toppings loop again
+		} while (!validated);
+		display(credits, totalCredits, true);
+
+		title("Extra's Selection");
+		cout << "Do you want to add an extra? ";
+		validated = yesOrNoFUNC();
+		//returns wether next block is ran as the extras are optional
+
+		while (!validated) {
+			title("Which Extra would you like?");
+			listOutput(extraHasOrdered, extrasNames, extras, LENOFEXTRAS);
+			//outputs all the extras
+
+			int extrasNum = isInputInList(extraHasOrdered, extrasNames, extras, LENOFEXTRAS);
+			totalCredits = totalCredits + toppings[extrasNum];
+
+			display(credits, totalCredits, false);
+			cout << "Would you like to add another Extra ? ";
+			validated = yesOrNoFUNC();
 		}
-		else {
-			title("    Payment Successful");
-			cout << "Remaining Credits: " << credits - totalCredits << endl;
-			paymentSuccess = true;
-		}
-	} while (!paymentSuccess);
-	//check for payment, repeat asking user to add more credits to pay or cancel order
-	paymentSuccess = false; //resets so the payment loop can be used be again for new orders/
+		display(credits, totalCredits, true);
+		validated = false;
+		//extra's selecting code
 
+		title("Payment Screen");
+		display(credits, totalCredits, false);
+		bool paymentSuccess = false;
+		// ^^ used for 'adding credits' loop so the user cannot leave that screen until they pay
 
+		do {
+			system("pause");
+			if (totalCredits > credits) {
+				cout << endl << "ERROR, Not Enough Funds!" << endl;
+				cout << "Would you like to enter more credits, or cancel order? ";
+				validated = yesOrNoFUNC();
+				//lets user add more credits if they do not have enough
+				while (!validated) {
+					addCredits(credits);
+					cout << "You now have " << credits << " credits" << endl;
+					display(credits, totalCredits, false);
+					validated = true;
+					//takes input of the new credits entered, adds them to toal then displays the new values
+				}
+			}
+			else if (totalCredits < credits || totalCredits == credits) {
+				title("Payment Successful!");
+				cout << "Remaining Credits: " << credits - totalCredits << endl;
+				paymentSuccess = true;
+			}
+			
+		} while (!paymentSuccess);
+		//check for payment, repeat asking user to add more credits to pay or cancel order
+		
+		validated = false;
+		paymentSuccess = false;
+		resetArray(toppingsHasOrdered, LENOFTOPPINGS);
+		resetArray(extraHasOrdered, LENOFEXTRAS);
+		totalCredits = 0.0;
+		//reset values for a new potato to be ordered
 
+		cout << endl;
+		title("Return to menu...");
+		system("pause");
+		system("cls");
+		do {
+			menu(credits, continueLoop, validated);
+		} while (!validated);
+		//this goes to the menu where the customer can order another potato, add more credits or exit
+	}
+
+	title("Goodbye!\n             See you soon...");
+	cout << endl;
+	title("\n             Enjoy your Meal\n");
 	//TO ADD//
 	// - let customer add more toppings										-----(DONE)-----
 	// - add the EXTRAS														-----(DONE)-----
@@ -231,8 +293,8 @@ int main() {
 	// - dont display contdicting toppings (e.g butter and garlic butter)
 	// - find out a way to not need '-' in two word toppings
 	// - make a file and save order (LATE STUFF)
-	// - add an overarching menu 
+	// - add an overarching menu											-----(DONE)-----
 	// - comment and format code better, right now its messy and hard to read
-	// - refer to brief
+	// - refer to brief...
 	//TO ADD//
 }
