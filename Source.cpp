@@ -1,5 +1,4 @@
 //		Rowan Perry		//
-//	 No.  21274961		//
 #include <iostream>
 #include <sstream>
 #include <iomanip>
