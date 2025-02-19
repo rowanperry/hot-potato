@@ -1,17 +1,19 @@
 //		Rowan Perry		//
 //	 No.  21274961		//
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <string>
+#include <fstream> //used for reading and writing into files 
 using namespace std;
 
-const int LENOFTOPPINGS = 8;
-const string toppingsNames[LENOFTOPPINGS] = { "cheese", "butter", "garlic-butter","beans", "curry-sauce","mushrooms", "onions","extra-special-cheese" };
-const double toppings[LENOFTOPPINGS] = { 1.0, 0.4, 0.5, 0.75, 1.20, 0.8, 0.4, 1.5 };
+const int LENOFTOPPINGS = 8; //used to decrease magic numbers
+const string toppingsNames[ LENOFTOPPINGS ] = { "cheese", "butter", "garlic-butter","beans", "curry-sauce","mushrooms", "onions","extra-special-cheese" };
+const double toppings[ LENOFTOPPINGS ] = { 1.00, 0.40, 0.50, 0.75, 1.20, 0.80, 0.40, 1.50 };
 
-const int LENOFEXTRAS = 6; 
-const string extrasNames[LENOFEXTRAS] = {"salad-box", "hot-dog", "fizzy-drink", "water", "tea", "coffee"};
-const double extras[LENOFEXTRAS] = {1.50, 4.0, 1.2, 0.8, 1.0, 1.2};
+const int LENOFEXTRAS = 6; //used to decrease magic numbers 
+const string extrasNames[ LENOFEXTRAS ] = {"salad-box", "hot-dog", "fizzy-drink", "water", "tea", "coffee"};
+const double extras[ LENOFEXTRAS ] = {1.50, 4.00, 1.20, 0.80, 1.00, 1.20};
 
 void title(string text) {
 	cout << "----------------------------------------------------------------" << endl;
@@ -28,35 +30,52 @@ void display(double Icredits, double ItotalCredits, bool clear) {
 		system("cls");
 	}
 }
-//formatting function; displays the current order status, is clear is passed as true it will clear the screen as well 
+//formatting function; displays the current order status, if clear is passed as true it will clear the screen as well 
 
 string ToLower(string myString) {
 	string lowerString;
 	for (auto c : myString) lowerString += tolower(c);
 	return lowerString;
 }
-//converts inputs to lower case - provided (by ollie)
+//converts inputs to lower case - (provided by ollie)
+
+void inputFile(string inputString) {
+	fstream myfile;
+	myfile.open("Orders.txt", fstream::app);	//fstream::app makes amends the file so that it will no write over it
+	myfile << inputString;
+	myfile.close();
+}
+//inputs passed string into the file then closes it
 
 int isInputInList(bool arrayCheck[], const string array[],  const double arrayPrice[], int MAX) {
 	int temp = 0;
 	string inputString;
 	cin >> inputString;
 	ToLower(inputString);
-	for (int i=0;i<MAX;i++) {
+	for (int i=0; i<MAX; i++) {
 		if (inputString == array[i]) {
 			temp = i;
 			break; //skips to the if statment below
 		}
 	}
 	if (temp >= 0 && temp < MAX) {
-		cout << "You chose the " << array[temp] << ", it Costs: " << arrayPrice[temp] << endl;
-		arrayCheck[temp] = true;
-		return temp;
+		if (!arrayCheck[temp]) {
+			cout << "You chose the " << array[temp] << ", it Costs: " << arrayPrice[temp] << endl;
+			inputFile(array[temp]);
+			inputFile(", ");
+			arrayCheck[temp] = true;
+			return temp;
+		}
+		else {
+			cout << "You already chose that!" << endl;
+			return -1;
+		}
 	}
 	return -1;
 }
 //takes user input and checks the input with all the array contents in the passed array
 //returns the place in the array, or -1 for not found
+//uses the inputFile function to add chosen topping into the file
 
 void addCredits(double& number) {
 	double input = 0.0;
@@ -108,14 +127,29 @@ void listOutput(bool arrayCheck[], const string array[], const double arrayPrice
 //outputs the list of items; arraycheck checks if that item has been orderd doesnt display it if it has, 
 //array displays the name of the item, arrayPrice displays the price, and MAX is used to represent the size of the array how many loops are needed
 
+void outputFile() {
+	system("pause");
+	system("cls");
+	title("Previous Orders");
+	ifstream f("Orders.txt");		//opens the file
+
+	if (f.is_open()) {
+		cout << f.rdbuf();		//outputs the contents
+	}
+	else {
+		cout << "Error Opening File!" << endl;
+	}
+	cout << endl;
+}
+
 void menu(double& number, bool& loop, bool& loopMenu) {
 	int choice = 0;
 	title("Hot Potato \n             Please Choose an Option... ");
 	cout << endl;
-	title("\n             (1)Enter Credits\n             (2)Make Order\n             (3)Exit\n");
+	title("\n             (1)Enter Credits\n             (2)Make Order\n             (3)View Past Orders\n             (4)Exit\n");
 	//start menu
 	cin >> choice;
-	while (cin.fail() || choice <= 0 || choice >= 4) {
+	while (cin.fail() || choice <= 0 || choice >= 5) {
 		cin.clear();
 		cin.ignore(80, '\n');
 
@@ -130,10 +164,15 @@ void menu(double& number, bool& loop, bool& loopMenu) {
 	}
 	else if (choice == 2) {
 		loopMenu = true;
+		//loopmenu meanns that the whole ordering loop in main is actaully run, if 2 isnt chosen it will skip it and return back to the menu screen
 	}
-	else if (choice == 3) {
+	else if (choice == 3){
+		outputFile();
+	}
+	else if (choice == 4) {
 		loop = false;
 		loopMenu = true;
+		//loop menu means the whole project will not loop as the menu isnt called again and exits the project
 	}
 	system("pause");
 	system("cls");
@@ -152,7 +191,7 @@ void resetArray(bool array[], int MAX) {
 //--------------------------------//
 int main() {
 	double credits = 0.0;
-	double totalCredits = 0.0;
+	double totalCredits = 0.0;	//order cost
 	cout << fixed << setprecision(2); //makes the two above doubles act like currency, without this they will display as whole numbers if credits arnt entered fist
 	string size;
 	bool validated = false;
@@ -160,7 +199,9 @@ int main() {
 
 	bool toppingsHasOrdered[LENOFTOPPINGS] = { false,false,false,false,false,false,false,false };
 	bool extraHasOrdered[LENOFEXTRAS] = { false,false,false,false,false,false };
+	// toppings / extra arrays, to stop multiple toppings orders
 	
+	title("Welcome to...");
 	do {
 		menu(credits, continueLoop, validated);
 		//main menu screen, passed the credits to be changed if chosen
@@ -169,17 +210,37 @@ int main() {
 
 	while (continueLoop) {
 		title("Size Selection");
+		inputFile("		-Order: ");
+
+		fstream myfile;
+		myfile.open("OrderNUM.txt");
+		int orderNUM;
+		myfile >> orderNUM;
+		myfile.close();
+		//above block opens orderNUM file which contains a single number which is used to hold the value of the current order
+		
+		orderNUM++;
+		inputFile(to_string(orderNUM));
+		//adds order number to the actaul orders file after upping it by one
+
+		ofstream myfile2;
+		myfile2.open("OrderNUM.txt");
+		myfile2 << to_string(orderNUM);
+		myfile2.close();
+		//rights over the orderNUM file so that the value is changed
+		//gets a unqiue number for each order that increases everytime by changing the file contents without amending
+
 		validated = false;
 		do {
-			title("What Size would you like...\n             small (5.00) / medium (8.50) / large (10.25)... ?");
+			title("What Size would you like...\n             -small (5.00)\n             -medium (8.50)\n             -large (10.25)... ?");
 			cin >> size;
 			size = ToLower(size);
 			if (size == "small") {
-				totalCredits = totalCredits + 5.0;
+				totalCredits = totalCredits + 5.00;
 				validated = true;
 			}
 			else if (size == "medium") {
-				totalCredits = totalCredits + 8.5;
+				totalCredits = totalCredits + 8.50;
 				validated = true;
 			}
 			else if (size == "large") {
@@ -192,11 +253,14 @@ int main() {
 		} while (!validated);
 		//takes and converts input into lower case, then compares it the the sizes and adds the prices of which to TotalCredits
 		cout << "You chose " << size << ", that comes to " << totalCredits << endl;
+		inputFile("\nSize:     ");
+		inputFile(size);
 		display(credits, totalCredits, true);
 		//clears page and displays order status, used often ^^^
 
 		title("Topping's Selection");
 		display(credits, totalCredits, false);
+		inputFile("\nToppings: ");
 
 		validated = false;
 		do {
@@ -220,7 +284,8 @@ int main() {
 		cout << "Do you want to add an extra? ";
 		validated = yesOrNoFUNC();
 		//returns wether next block is ran as the extras are optional
-
+		
+		inputFile("\nExtras:   ");
 		while (!validated) {
 			title("Which Extra would you like?");
 			listOutput(extraHasOrdered, extrasNames, extras, LENOFEXTRAS);
@@ -246,7 +311,7 @@ int main() {
 			system("pause");
 			if (totalCredits > credits) {
 				cout << endl << "ERROR, Not Enough Funds!" << endl;
-				cout << "Would you like to enter more credits, or cancel order? ";
+				cout << "Would you like to enter more credits to pay for the order? ";
 				validated = yesOrNoFUNC();
 				//lets user add more credits if they do not have enough
 				while (!validated) {
@@ -257,11 +322,22 @@ int main() {
 					//takes input of the new credits entered, adds them to toal then displays the new values
 				}
 			}
-			else if (totalCredits < credits || totalCredits == credits) {
+			else if (totalCredits <= credits) {
 				title("Payment Successful!");
 				cout << "Remaining Credits: " << credits - totalCredits << endl;
+				inputFile("\nPrice:    ");
+				
+				ofstream myfile("Orders.txt", ifstream::app); //append doesnt overwrite file
+				cout << fixed << setprecision(2);
+				myfile << totalCredits;
+				//seperate entry for totalcredits as a double cannot be passed through the input file function
+				myfile.close();
+
+				inputFile("\n\n");
 				paymentSuccess = true;
+				credits = credits - totalCredits;
 			}
+			//adds orders to the file so that users can view past orders
 			
 		} while (!paymentSuccess);
 		//check for payment, repeat asking user to add more credits to pay or cancel order
@@ -286,15 +362,5 @@ int main() {
 	title("Goodbye!\n             See you soon...");
 	cout << endl;
 	title("\n             Enjoy your Meal\n");
-	//TO ADD//
-	// - let customer add more toppings										-----(DONE)-----
-	// - add the EXTRAS														-----(DONE)-----
-	// - dont display topppings they alr have								-----(DONE)-----
-	// - dont display contdicting toppings (e.g butter and garlic butter)
-	// - find out a way to not need '-' in two word toppings
-	// - make a file and save order (LATE STUFF)
-	// - add an overarching menu											-----(DONE)-----
-	// - comment and format code better, right now its messy and hard to read
-	// - refer to brief...
-	//TO ADD//
+	//end screen
 }

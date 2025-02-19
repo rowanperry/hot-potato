@@ -1,0 +1,72 @@
+		-Order: 1
+Size:     medium
+Toppings: cheese, beans, butter, 
+Extras:   tea, 
+Price:    11.85
+
+		-Order: 2
+Size:     medium
+Toppings: beans, cheese, 
+Extras:   coffee, 
+Price:    11.05
+
+		-Order: 3
+Size:     large
+Toppings: cheese, mushrooms, 
+Extras:   
+Price:    12.05
+
+		-Order: 4
+Size:     small
+Toppings: cheese, 
+Extras:   tea, 
+Price:    7.2
+
+		-Order: 5
+Size:     large
+Toppings: beans, 
+Extras:   tea, water, 
+Price:    12.95
+
+		-Order: 6
+Size:     medium
+Toppings: cheese, beans, 
+Extras:   fizzy-drink, 
+Price:    10.75
+
+		-Order: 7
+Size:     large
+Toppings: cheese, butter, beans, onions, 
+Extras:   salad-box, hot-dog, coffee, fizzy-drink, water, tea, 
+Price:    17.45
+
+		-Order: 8
+Size:     large
+Toppings: cheese, 
+Extras:   
+Price:    11.25
+
+		-Order: 9
+Size:     medium
+Toppings: butter, mushrooms, 
+Extras:   tea, salad-box, 
+Price:    11.9
+
+		-Order: 10
+Size:     large
+Toppings: butter, curry-sauce, 
+Extras:   salad-box, 
+Price:    12.85
+
+		-Order: 11
+Size:     small
+Toppings: cheese, 
+Extras:   
+Price:    6
+
+		-Order: 12
+Size:     large
+Toppings: cheese, curry-sauce, 
+Extras:   water, coffee, 
+Price:    14
+
